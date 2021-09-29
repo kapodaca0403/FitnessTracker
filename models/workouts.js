@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const workouts = new Schema({
+const workoutsSchema = new Schema({
   reps: {
-    type: String,
+    type: Number,
   },
   distance: {
     type: Number,
@@ -24,6 +24,7 @@ const workouts = new Schema({
     type: Number,
   },
   day: {
+    type: Date,
     default: Date.now,
   },
   type: {
@@ -31,14 +32,16 @@ const workouts = new Schema({
   },
 });
 
-workouts.methods.coolifier = function () { 
-    this.workout = `${this.workout} has been added`; 
-    return this.workout, 
-}; 
+// workouts.methods.coolifier = function () {
+//   this.workout = `${this.workout} has been added`;
+//   return this.workout;
+// };
 
-workouts.methods.makeCool = function () { 
-    this.isCool = true; 
-    return this.isCool; 
-}; 
+// workouts.methods.makeCool = function () {
+//   this.isCool = true;
+//   return this.isCool;
+// };
 
-module.exports = workouts; 
+const workouts = mongoose.model("workouts", workoutsSchema);
+
+module.exports = workouts;

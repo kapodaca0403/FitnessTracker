@@ -19,6 +19,28 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/tracker", {
   useNewUrlParser: true,
 });
 
+//get route for exercise, stats, continue workout and new workout?
+app.get("/stats", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/stats.html"));
+});
+
+app.get("/exercise", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.htnml"));
+});
+
+app.get("/exercise", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/exercise.html"));
+});
+
+db.workouts
+  .create({ name: "Workout Tracker" })
+  .then((dbworkouts) => {
+    console.log(dbworkouts);
+  })
+  .catch(({ message }) => {
+    console.log(message);
+  });
+
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
 });
