@@ -3,33 +3,37 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const workoutsSchema = new Schema({
-  reps: {
-    type: Number,
-  },
-  distance: {
-    type: Number,
-  },
-  duration: {
-    type: Number,
-  },
-  sets: {
-    type: Number,
-  },
-  name: {
-    type: String,
-    trim: true,
-    require: "Please enter name of workout",
-  },
-  weight: {
-    type: Number,
-  },
   day: {
     type: Date,
     default: Date.now,
   },
-  type: {
-    type: String,
-  },
+  exercises: [
+    {
+      reps: {
+        type: Number,
+      },
+      distance: {
+        type: Number,
+      },
+      duration: {
+        type: Number,
+      },
+      sets: {
+        type: Number,
+      },
+      name: {
+        type: String,
+        trim: true,
+        required: "Please enter name of workout",
+      },
+      weight: {
+        type: Number,
+      },
+      type: {
+        type: String,
+      },
+    },
+  ],
 });
 
 // workouts.methods.coolifier = function () {
@@ -42,6 +46,6 @@ const workoutsSchema = new Schema({
 //   return this.isCool;
 // };
 
-const workouts = mongoose.model("workouts", workoutsSchema);
+const Workouts = mongoose.model("Workouts", workoutsSchema);
 
-module.exports = workouts;
+module.exports = Workouts;

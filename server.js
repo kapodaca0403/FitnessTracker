@@ -18,6 +18,8 @@ app.use(express.static("public"));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/tracker", {
   useNewUrlParser: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 //get route for exercise, stats, continue workout and new workout?
@@ -25,27 +27,78 @@ app.get("/stats", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/stats.html"));
 });
 
-app.get("/exercise", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "/public/index.html"));
+// });
 
 app.get("/exercise", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/exercise.html"));
 });
 
+app.get("/api/workouts", (req, res) => {
+  db.workouts
+    .aggregate([
+      {
+        $addFields: {
+          totalDuration: {
+            $sum: "$exercises.duration",
+          },
+        },
+      },
+    ])
+    .then((dbworkouts) => {
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
 // caddExercise , getLastWorkout , createWorkout , getWorkoutsInRange
 app.get("/api/workouts/:id", (req, res) => {
-  db.workouts.find({});
+  db.workouts.findById({});
+
   // call function to updated created workout??
 });
 
-app.get("/api/workouts", (req, res) => {
-  db.workouts.find({});
-  // create workout and addExercise? ?
+app.put("/api/workouts/:id", (req, res) => {
+  console.log(req.body);
+  db.workouts
+    .findByIdAndUpdate(
+      req.params.id,
+      { $push: { exercises: req.body } },
+      { new: true, runValidators: true }
+    )
+    .then((dbworkouts) => {
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 });
 
+app.post("/api/workouts", ({ body }, res) => {
+  // db.workouts.findOne({});
+  db.workouts
+    .create(body)
+    .then(({ _id }) =>
+      db.workouts.findOneAndUpdate(
+        {},
+        { $push: { workouts: _id } },
+        { new: true }
+      )
+    )
+    .then((dbworkouts) => {
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+// create workout and addExercise? ?
+
 app.get("/api/workouts/range", (req, res) => {
-  db.workouts.find({});
+  db.workouts.findOne({});
   // call function to get getWorkoutRange???
 });
 
