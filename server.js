@@ -35,6 +35,10 @@ app.get("/exercise", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/exercise.html"));
 });
 
+// app.get("/stats", (req, res) => {
+//   db.workouts.findAll((dbworkouts) => {});
+// });
+
 app.get("/api/workouts", (req, res) => {
   db.workouts
     .aggregate([
@@ -56,7 +60,14 @@ app.get("/api/workouts", (req, res) => {
 
 // caddExercise , getLastWorkout , createWorkout , getWorkoutsInRange
 app.get("/api/workouts/:id", (req, res) => {
-  db.workouts.findById({});
+  db.workouts
+    .findById({})
+    .then((dbworkouts) => {
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 
   // call function to updated created workout??
 });
@@ -70,6 +81,7 @@ app.put("/api/workouts/:id", (req, res) => {
       { new: true, runValidators: true }
     )
     .then((dbworkouts) => {
+      console.log({ dbworkouts });
       res.json(dbworkouts);
     })
     .catch((err) => {
@@ -80,14 +92,14 @@ app.put("/api/workouts/:id", (req, res) => {
 app.post("/api/workouts", ({ body }, res) => {
   // db.workouts.findOne({});
   db.workouts
-    .create(body)
-    .then(({ _id }) =>
-      db.workouts.findOneAndUpdate(
-        {},
-        { $push: { workouts: _id } },
-        { new: true }
-      )
-    )
+    .create({})
+    // .then(({ _id }) =>
+    //   db.workouts.findOneAndUpdate(
+    //     {},
+    //     { $push: { workouts: _id } },
+    //     { new: true }
+    //   )
+    // )
     .then((dbworkouts) => {
       res.json(dbworkouts);
     })
@@ -98,19 +110,36 @@ app.post("/api/workouts", ({ body }, res) => {
 // create workout and addExercise? ?
 
 app.get("/api/workouts/range", (req, res) => {
-  db.workouts.findOne({});
+  console.log("checking");
+  db.workouts
+    .aggregate([
+      {
+        $addFields: {
+          totalDuration: {
+            $sum: "$exercises.duration",
+          },
+        },
+      },
+    ])
+    .then((dbworkouts) => {
+      console.log(dbworkouts);
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
   // call function to get getWorkoutRange???
 });
 
 // i don't think i need this?
-db.workouts
-  .create({ name: "Workout Tracker" })
-  .then((dbworkouts) => {
-    console.log(dbworkouts);
-  })
-  .catch(({ message }) => {
-    console.log(message);
-  });
+// db.workouts
+//   .create({ name: "Workout Tracker" })
+//   .then((dbworkouts) => {
+//     console.log(dbworkouts);
+//   })
+//   .catch(({ message }) => {
+//     console.log(message);
+//   });
 
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
