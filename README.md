@@ -19,6 +19,8 @@ This project is licensed under the MIT license.
 ## Description
 
 This it a fitness tracker that allows you to create new workouts for the day and keep track of previous workouts created. You can create new workouts and track your the type of workout, weight, sets, reps, and duration. Cardio can be tracked as well, by totaling the distance traveled as well.
+Here is the deployed link to Heroku: 
+https://katerz-fitness-tracker.herokuapp.com/stats
 
 ## Tests
 
