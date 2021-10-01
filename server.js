@@ -27,17 +27,31 @@ app.get("/stats", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/stats.html"));
 });
 
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "/public/index.html"));
-// });
-
 app.get("/exercise", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/exercise.html"));
 });
 
-// app.get("/stats", (req, res) => {
-//   db.workouts.findAll((dbworkouts) => {});
-// });
+app.get("/api/workouts/range", (req, res) => {
+  console.log("checking");
+  db.workouts
+    .aggregate([
+      {
+        $addFields: {
+          totalDuration: {
+            $sum: "$exercises.duration",
+          },
+        },
+      },
+    ])
+    .then((dbworkouts) => {
+      console.log(dbworkouts);
+      res.json(dbworkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+  // call function to get getWorkoutRange???
+});
 
 app.get("/api/workouts", (req, res) => {
   db.workouts
@@ -107,39 +121,6 @@ app.post("/api/workouts", ({ body }, res) => {
       res.json(err);
     });
 });
-// create workout and addExercise? ?
-
-app.get("/api/workouts/range", (req, res) => {
-  console.log("checking");
-  db.workouts
-    .aggregate([
-      {
-        $addFields: {
-          totalDuration: {
-            $sum: "$exercises.duration",
-          },
-        },
-      },
-    ])
-    .then((dbworkouts) => {
-      console.log(dbworkouts);
-      res.json(dbworkouts);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-  // call function to get getWorkoutRange???
-});
-
-// i don't think i need this?
-// db.workouts
-//   .create({ name: "Workout Tracker" })
-//   .then((dbworkouts) => {
-//     console.log(dbworkouts);
-//   })
-//   .catch(({ message }) => {
-//     console.log(message);
-//   });
 
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
